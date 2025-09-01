@@ -1,5 +1,5 @@
-const CLIST_USERNAME = 'clist_username';
-const CLIST_API_KEY = 'get_ur_api_from_clist';
+const CLIST_USERNAME = 'jaggi3117';
+const CLIST_API_KEY = 'e6269a8c272358b4ef1d8019aee79c3315416fb6';
 
 const API_URL = `https://clist.by/api/v4/contest/?username=${CLIST_USERNAME}&api_key=${CLIST_API_KEY}&host__iregex=codeforces.com|codechef.com|leetcode.com&upcoming=true&order_by=start`;
 

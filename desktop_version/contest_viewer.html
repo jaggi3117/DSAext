@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upcoming Contests</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 400px;
+      height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      color: #2c3e50;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #34495e;
+      padding: 12px 15px;
+      margin: 0;
+      border-bottom: 1px solid #ecf0f1;
+      -webkit-app-region: drag;
+    }
+    
+    .contest-list-container {
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 1px solid #ecf0f1;
+      transition: background-color 0.2s ease-in-out;
+      -webkit-app-region: no-drag;
+    }
+    li:last-child a {
+        border-bottom: none;
+    }
+    li a:hover {
+      background-color: #f9f9f9;
+    }
+    li a b {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+    li a small {
+      font-size: 13px;
+      color: #7f8c8d;
+    }
+
+    .status-message {
+        text-align: center;
+        padding: 20px;
+        color: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Upcoming Contests</h3>
+        <div class="contest-list-container">
+            <ul id="contest-list">
+                <li class="status-message">Loading contests...</li>
+            </ul>
+        </div>
+    </div>
+  <script>
+    const CLIST_USERNAME = 'jaggi3117';
+    const CLIST_API_KEY = 'e6269a8c272358b4ef1d8019aee79c3315416fb6';
+    const API_URL = `https://clist.by/api/v4/contest/?username=${CLIST_USERNAME}&api_key=${CLIST_API_KEY}&host__iregex=codeforces.com|codechef.com|leetcode.com&upcoming=true&order_by=start&limit=50`;
+
+    async function fetchContests() {
+        const contestList = document.getElementById('contest-list');
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            const contests = data.objects;
+            
+            contestList.innerHTML = '';
+            
+            if (contests && contests.length > 0) {
+                const options = {
+                    timeZone: 'Asia/Kolkata',
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: 'numeric', minute: '2-digit', hour12: true,
+                };
+                const formatter = new Intl.DateTimeFormat('en-IN', options);
+
+                contests.forEach(contest => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = contest.href;
+                    link.target = '_blank';
+                    
+                    const startTime = new Date(contest.start + 'Z');
+                    const formattedTime = formatter.format(startTime);
+
+                    link.innerHTML = `<b>${contest.event}</b><small>${contest.host} - ${formattedTime}</small>`;
+                    listItem.appendChild(link);
+                    contestList.appendChild(listItem);
+                });
+            } else {
+                contestList.innerHTML = '<li class="status-message">No upcoming contests found.</li>';
+            }
+        } catch (error) {
+            console.error("Failed to fetch contests:", error);
+            contestList.innerHTML = '<li class="status-message">Failed to load contests.</li>';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', fetchContests);
+  </script>
+</body>
+</html>
+
